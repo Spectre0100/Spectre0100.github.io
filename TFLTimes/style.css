@@ -1,0 +1,111 @@
+/* Base formatting */
+body {
+  font-family: 'Lato', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #0c0c0c;
+  color: #eee;
+}
+
+header {
+  color: #eee;
+  padding: 20px;
+  text-align: center;
+}
+
+main {
+  padding: 20px;
+  text-align: center;
+}
+
+p {
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Table formatting */
+table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  border-left: none;
+  border-right: none;
+  width: 60%;
+  max-width: 600px;
+  background-color: #0c0c0c;
+}
+
+th,
+td {
+  border: 1px solid #2d2d2d;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  padding: 10px;
+}
+
+tr {
+  border: 0px;
+  padding: 10px;
+}
+
+/* Make table columns fixed width */
+table.fixed {
+  margin: 0 auto;
+  border-collapse: collapse;
+  border-left: none;
+  border-right: none;
+  width: 80%;
+  max-width: 600px;
+  background-color: #0c0c0c;
+  table-layout: fixed;
+  overflow: auto;
+}
+
+/* Table headers */
+.header {
+  color: #FFFFFF;
+  font-weight: bold;
+  border-radius: 20px;
+  max-width: 600px;
+  width: 33%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px;
+}
+
+.DLRHeader {
+  background-color: #00afa9;
+}
+
+.ELZHeader {
+  background-color: #773dbd;
+}
+
+.JUBHeader {
+  background-color: #7b868c;
+}
+
+/* Status message (No data) */
+.status {
+  font-weight: normal;
+  font-size: 16px;
+}
+
+/* Loading animation */
+.loading {
+  width: 44px;
+  margin-left: auto;
+  margin-right: auto;
+  aspect-ratio: 4;
+  background: radial-gradient(circle closest-side, #FFF 90%, #0000) 0/calc(100%/3) 100% space;
+  clip-path: inset(0 100% 0 0);
+  animation: l1 1.5s steps(4) infinite;
+}
+
+@keyframes l1 {
+  to {
+    clip-path: inset(0 -34% 0 0)
+  }
+}
