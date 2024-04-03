@@ -1,7 +1,7 @@
 # TfL station arrival times
 A webpage which uses the TfL API to display the next arrival times at stations. Works for the London Underground, DLR and Elizabeth Lines.
 
-## Version 0.1:
+## Version 0.1
 The first official release. Overhauled the UI and added quality of life improvements.
 
 #### 🔎 What's new?
