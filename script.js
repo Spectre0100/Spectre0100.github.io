@@ -1,6 +1,6 @@
 // URLs for TFL API calls
-const url_bla = 'https://api.digital.tfl.gov.uk/Line/dlr/Arrivals/940GZZDLBLA?direction=inbound';
-const url_twg = 'https://api.digital.tfl.gov.uk/stoppoint/940GZZDLTWG/Arrivals';
+const url_bla = 'https://api.tfl.gov.uk/Line/dlr/Arrivals/940GZZDLBLA?direction=inbound';
+const url_twg = 'https://api.tfl.gov.uk/stoppoint/940GZZDLTWG/Arrivals';
 const url_can = 'https://api.tfl.gov.uk/Line/elizabeth/Arrivals/910GCANWHRF?direction=outbound';
 const url_cyf = 'https://api.tfl.gov.uk/Line/jubilee/Arrivals/940GZZLUCYF?direction=inbound';
 const url_gpk = 'https://api.tfl.gov.uk/Line/jubilee/Arrivals/940GZZLUGPK?direction=outbound';
@@ -38,19 +38,19 @@ async function getArrivalsTable(stationUrl, stationCode) {
     // Format arrivals data
     let arrivals = [];
     for (const arrival of data) {
-      // If less than 60 seconds display seconds, else minutes 
       seconds = arrival.timeToStation;
-      // Flag to store whether seconds should be displayed
-      var secFlag = function() { return seconds < 60 };
-      if (secFlag) {
+      // Add flag to indicate seconds or minutes
+      if (seconds < 60) {
         arrivals.push({
           'dest': getName(arrival.destinationName),
-          'time': seconds
+          'time': seconds,
+          'secFlag': true
         });
       } else {
         arrivals.push({
           'dest': getName(arrival.destinationName),
-          'time': Math.round(arrival.timeToStation / 60)
+          'time': seconds,
+          'secFlag': false
         });
       }
     }
@@ -69,7 +69,8 @@ async function getArrivalsTable(stationUrl, stationCode) {
       const destinationCell = document.createElement('td');
       destinationCell.textContent = arrival.dest;
       const timeToArrivalCell = document.createElement('td');
-      timeToArrivalCell.textContent = secFlag ? arrival.time + " sec" : arrival.time + " min";
+      // If less than 60 seconds display seconds, else minutes 
+      timeToArrivalCell.textContent = arrival.secFlag ? arrival.time + " sec" : Math.round(arrival.time / 60) + " min";
       row.appendChild(destinationCell);
       row.appendChild(timeToArrivalCell);
       tableBody.appendChild(row);
@@ -84,7 +85,7 @@ async function getArrivalsTable(stationUrl, stationCode) {
       document.getElementById(`${stationCode}Status`).innerHTML = "Failed to fetch.";
       return;
     }
-    
+
     throw new Error("Error fetching arrivals data.");
   }
 

@@ -1,26 +1,31 @@
 /* Base formatting */
+html {
+  font-size: 2vh;
+}
+
 body {
   font-family: 'Lato', sans-serif;
-  margin: 0;
-  padding: 0;
+  margin: 0%;
+  padding: 0%;
   background-color: #0c0c0c;
   color: #eee;
 }
 
 header {
   color: #eee;
-  padding: 20px;
+  padding-top: 3em;
+  padding-bottom: 0em;
   text-align: center;
 }
 
 main {
-  padding: 20px;
+  padding: 2em;
   text-align: center;
 }
 
 p {
-  font-size: 20px;
-  margin-bottom: 20px;
+  font-size: 1.5em;
+  margin-bottom: 1em;
   font-weight: bold;
   text-align: center;
 }
@@ -32,7 +37,7 @@ table {
   border-left: none;
   border-right: none;
   width: 60%;
-  max-width: 600px;
+  max-width: 1600px;
   background-color: #0c0c0c;
 }
 
@@ -42,22 +47,22 @@ td {
   border-left: none;
   border-right: none;
   border-top: none;
-  padding: 10px;
+  padding: 0.5em;
 }
 
 tr {
-  border: 0px;
-  padding: 10px;
+  border: 0.05em;
+  padding: 0.5em;
 }
 
 /* Make table columns fixed width */
 table.fixed {
-  margin: 0 auto;
+  /* margin: 0 auto; */
   border-collapse: collapse;
   border-left: none;
   border-right: none;
-  width: 80%;
-  max-width: 600px;
+  width: 60%;
+  max-width: 1600px;
   background-color: #0c0c0c;
   table-layout: fixed;
   overflow: auto;
@@ -67,12 +72,12 @@ table.fixed {
 .header {
   color: #FFFFFF;
   font-weight: bold;
-  border-radius: 20px;
-  max-width: 600px;
-  width: 33%;
+  border-radius: 0.8em;
+  width: 60%;
+  max-width: 1600px;
   margin-left: auto;
   margin-right: auto;
-  padding: 10px;
+  padding: 0.5em;
 }
 
 .DLRHeader {
@@ -90,12 +95,12 @@ table.fixed {
 /* Status message (No data) */
 .status {
   font-weight: normal;
-  font-size: 16px;
+  font-size: 1em;
 }
 
 /* Loading animation */
 .loading {
-  width: 44px;
+  width: 2.5em;
   margin-left: auto;
   margin-right: auto;
   aspect-ratio: 4;
@@ -108,4 +113,25 @@ table.fixed {
   to {
     clip-path: inset(0 -34% 0 0)
   }
+}
+
+/* Hyperlinks */
+a:link {
+  color: #FFF;
+  background-color: transparent;
+}
+
+a:visited {
+  color: #FFF;
+  background-color: transparent;
+}
+
+a:hover {
+  color: #FFF;
+  background-color: transparent;
+}
+
+a:active {
+  color: #FFF;
+  background-color: transparent;
 }
