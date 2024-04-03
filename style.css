@@ -36,7 +36,7 @@ table {
   border-collapse: collapse;
   border-left: none;
   border-right: none;
-  width: 60%;
+  width: 88%;
   max-width: 1600px;
   background-color: #0c0c0c;
 }
@@ -61,7 +61,7 @@ table.fixed {
   border-collapse: collapse;
   border-left: none;
   border-right: none;
-  width: 60%;
+  width: 88%;
   max-width: 1600px;
   background-color: #0c0c0c;
   table-layout: fixed;
@@ -73,7 +73,7 @@ table.fixed {
   color: #FFFFFF;
   font-weight: bold;
   border-radius: 0.8em;
-  width: 60%;
+  width: 88%;
   max-width: 1600px;
   margin-left: auto;
   margin-right: auto;
