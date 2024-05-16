@@ -1,9 +1,9 @@
 // URLs for TFL API calls
 const url_bla = 'https://api.tfl.gov.uk/Line/dlr/Arrivals/940GZZDLBLA?direction=inbound';
-const url_twg = 'https://api.tfl.gov.uk/stoppoint/940GZZDLTWG/Arrivals';
 const url_can = 'https://api.tfl.gov.uk/Line/elizabeth/Arrivals/910GCANWHRF?direction=outbound';
+const url_bst = 'https://api.tfl.gov.uk/Line/elizabeth/Arrivals/910GBONDST?direction=inbound';
 const url_cyf = 'https://api.tfl.gov.uk/Line/jubilee/Arrivals/940GZZLUCYF?direction=inbound';
-const url_gpk = 'https://api.tfl.gov.uk/Line/jubilee/Arrivals/940GZZLUGPK?direction=outbound';
+
 
 // Simplifies station names
 getName = function(s) {
@@ -96,7 +96,6 @@ async function getArrivalsTable(stationUrl, stationCode) {
 
 // Call function to populate arrivals tables
 getArrivalsTable(url_bla, 'BLA');
-getArrivalsTable(url_twg, 'TWG');
 getArrivalsTable(url_can, 'CAN');
+getArrivalsTable(url_bst, 'BST');
 getArrivalsTable(url_cyf, 'CYF');
-getArrivalsTable(url_gpk, 'GPK');
