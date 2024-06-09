@@ -11,6 +11,61 @@ body {
   color: #eee;
 }
 
+/* ADD LINE COLOURS HERE */
+.dlr {
+  background-color: #00afa9;
+}
+
+.elizabeth {
+  background-color: #773dbd;
+}
+
+.jubilee {
+  background-color: #7b868c;
+}
+
+/*************************/
+
+/* Disruptions formatting */
+
+.disruption-title {
+  text-align: left;
+  padding: 0.5em;
+  margin: auto;
+  width: 55%;
+}
+
+.disruption-desc {
+  text-align: left;
+  width: 55%;
+  margin: auto;
+  font-size: 0.8em !important;
+}
+
+.disruptions-container {
+  text-align: left;
+  border: auto;
+  width: 55%;
+}
+
+#disruptions-container-title {
+  font-size: 1.5em;
+}
+
+.dot {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 33%;
+  margin-right: 0.6em;
+}
+
+.subtext {
+  font-size: 0.8em;
+}
+
+/* Header and body content formatting */
+
 header {
   color: #eee;
   padding-top: 3em;
@@ -23,13 +78,6 @@ main {
   text-align: center;
 }
 
-p {
-  font-size: 1.5em;
-  margin-bottom: 1em;
-  font-weight: bold;
-  text-align: center;
-}
-
 /* Table formatting */
 table {
   margin: 0 auto;
@@ -38,7 +86,7 @@ table {
   border-right: none;
   width: 88%;
   max-width: 1600px;
-  background-color: #0c0c0c;
+  background-color: #111;
 }
 
 th,
@@ -57,7 +105,6 @@ tr {
 
 /* Make table columns fixed width */
 table.fixed {
-  /* margin: 0 auto; */
   border-collapse: collapse;
   border-left: none;
   border-right: none;
@@ -72,24 +119,15 @@ table.fixed {
 .header {
   color: #FFFFFF;
   font-weight: bold;
+  font-size: 1.5em;
+  text-align: center;
   border-radius: 0.8em;
   width: 88%;
   max-width: 1600px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 1em;
   padding: 0.5em;
-}
-
-.DLRHeader {
-  background-color: #00afa9;
-}
-
-.ELZHeader {
-  background-color: #773dbd;
-}
-
-.JUBHeader {
-  background-color: #7b868c;
 }
 
 /* Status message (No data) */
