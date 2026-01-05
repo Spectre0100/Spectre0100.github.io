@@ -10,6 +10,14 @@
   --accent: #3b82f6;
   --warning: #f59e0b;
   --error: #ef4444;
+  --main-text: 1.5rem;
+  --sub-text: 1rem;
+
+  /* Dynamic text sizes */
+  --text-main: 1.125rem;
+  --text-sub: 0.875rem;
+  --text-label: 0.8125rem;
+  --text-title: 1.75rem;
 
   /* Line colors */
   --dlr: #00AFAD;
@@ -26,7 +34,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: var(--text-main);
 }
 
 body {
@@ -47,14 +55,14 @@ header {
 }
 
 h1 {
-  font-size: 1.75rem;
+  font-size: var(--text-title);
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
-  font-size: 0.875rem;
+  font-size: var(--text-sub);
   color: var(--text-secondary);
 }
 
@@ -70,7 +78,7 @@ h1 {
 
 /* Main container */
 main {
-  max-width: 512px;
+  max-width: 1024px;
   margin: 0 auto;
   padding: 1rem;
 }
@@ -83,7 +91,7 @@ main {
   gap: 0.5rem;
   padding: 0.75rem;
   margin-bottom: 1rem;
-  font-size: 0.8125rem;
+  font-size: var(--text-label);
   color: var(--text-muted);
   background: var(--bg-card);
   border-radius: 0.75rem;
@@ -99,15 +107,8 @@ main {
 }
 
 @keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.3;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 /* Disruptions section */
@@ -138,15 +139,15 @@ main {
   align-items: center;
   gap: 0.75rem;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--text-main);
 }
 
 .disruptions-icon {
-  font-size: 1.25rem;
+  font-size: var(--text-main);
 }
 
 .expand-icon {
-  font-size: 1rem;
+  font-size: var(--text-main);
   transition: transform 0.2s ease;
   color: var(--text-muted);
 }
@@ -156,7 +157,7 @@ main {
 }
 
 .disruptions-hint {
-  font-size: 0.75rem;
+  font-size: var(--text-label);
   color: var(--text-muted);
   margin-top: 0.25rem;
   margin-left: 2rem;
@@ -194,7 +195,7 @@ main {
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--text-sub);
   margin-bottom: 0.5rem;
   text-transform: capitalize;
 }
@@ -206,60 +207,22 @@ main {
 }
 
 /* Line badge colors */
-.line-badge.dlr {
-  background: var(--dlr);
-}
-
-.line-badge.elizabeth {
-  background: var(--elizabeth);
-}
-
-.line-badge.jubilee {
-  background: var(--jubilee);
-}
-
-.line-badge.bakerloo {
-  background: var(--bakerloo);
-}
-
-.line-badge.central {
-  background: var(--central);
-}
-
-.line-badge.circle {
-  background: var(--circle);
-}
-
-.line-badge.district {
-  background: var(--district);
-}
-
-.line-badge.hammersmith-city {
-  background: var(--hammersmith-city);
-}
-
-.line-badge.metropolitan {
-  background: var(--metropolitan);
-}
-
-.line-badge.northern {
-  background: var(--northern);
-}
-
-.line-badge.piccadilly {
-  background: var(--piccadilly);
-}
-
-.line-badge.victoria {
-  background: var(--victoria);
-}
-
-.line-badge.waterloo-city {
-  background: var(--waterloo-city);
-}
+.line-badge.dlr { background: var(--dlr); }
+.line-badge.elizabeth { background: var(--elizabeth); }
+.line-badge.jubilee { background: var(--jubilee); }
+.line-badge.bakerloo { background: var(--bakerloo); }
+.line-badge.central { background: var(--central); }
+.line-badge.circle { background: var(--circle); }
+.line-badge.district { background: var(--district); }
+.line-badge.hammersmith-city { background: var(--hammersmith-city); }
+.line-badge.metropolitan { background: var(--metropolitan); }
+.line-badge.northern { background: var(--northern); }
+.line-badge.piccadilly { background: var(--piccadilly); }
+.line-badge.victoria { background: var(--victoria); }
+.line-badge.waterloo-city { background: var(--waterloo-city); }
 
 .disruption-text {
-  font-size: 0.8125rem;
+  font-size: var(--text-sub);
   line-height: 1.5;
   color: var(--text-secondary);
 }
@@ -297,57 +260,19 @@ main {
 }
 
 /* Line indicator colors */
-.station-card.dlr {
-  border-left: 3px solid var(--dlr);
-}
-
-.station-card.elizabeth {
-  border-left: 3px solid var(--elizabeth);
-}
-
-.station-card.jubilee {
-  border-left: 3px solid var(--jubilee);
-}
-
-.station-card.metropolitan {
-  border-left: 3px solid var(--metropolitan);
-}
-
-.station-card.bakerloo {
-  border-top: 3px solid var(--bakerloo);
-}
-
-.station-card.central {
-  border-top: 3px solid var(--central);
-}
-
-.station-card.circle {
-  border-top: 3px solid var(--circle);
-}
-
-.station-card.district {
-  border-top: 3px solid var(--district);
-}
-
-.station-card.hammersmith-city {
-  border-top: 3px solid var(--hammersmith-city);
-}
-
-.station-card.northern {
-  border-top: 3px solid var(--northern);
-}
-
-.station-card.piccadilly {
-  border-top: 3px solid var(--piccadilly);
-}
-
-.station-card.victoria {
-  border-top: 3px solid var(--victoria);
-}
-
-.station-card.waterloo-city {
-  border-top: 3px solid var(--waterloo-city);
-}
+.station-card.dlr { border-left: 4px solid var(--dlr); }
+.station-card.elizabeth { border-left: 4px solid var(--elizabeth); }
+.station-card.jubilee { border-left: 4px solid var(--jubilee); }
+.station-card.metropolitan { border-left: 4px solid var(--metropolitan); }
+.station-card.bakerloo { border-top: 4px solid var(--bakerloo); }
+.station-card.central { border-top: 4px solid var(--central); }
+.station-card.circle { border-top: 4px solid var(--circle); }
+.station-card.district { border-top: 4px solid var(--district); }
+.station-card.hammersmith-city { border-top: 4px solid var(--hammersmith-city); }
+.station-card.northern { border-top: 4px solid var(--northern); }
+.station-card.piccadilly { border-top: 4px solid var(--piccadilly); }
+.station-card.victoria { border-top: 4px solid var(--victoria); }
+.station-card.waterloo-city { border-top: 4px solid var(--waterloo-city); }
 
 .station-icon {
   width: 32px;
@@ -361,67 +286,28 @@ main {
 }
 
 /* Station icon colors */
-.station-icon.dlr {
-  color: var(--dlr);
-}
-
-.station-icon.elizabeth {
-  color: var(--elizabeth);
-}
-
-.station-icon.jubilee {
-  color: var(--jubilee);
-}
-
-.station-icon.bakerloo {
-  color: var(--bakerloo);
-}
-
-.station-icon.central {
-  color: var(--central);
-}
-
-.station-icon.circle {
-  color: var(--circle);
-}
-
-.station-icon.district {
-  color: var(--district);
-}
-
-.station-icon.hammersmith-city {
-  color: var(--hammersmith-city);
-}
-
-.station-icon.metropolitan {
-  color: var(--metropolitan);
-}
-
-.station-icon.northern {
-  color: var(--northern);
-  border: 1px solid var(--border-color);
-}
-
-.station-icon.piccadilly {
-  color: var(--piccadilly);
-}
-
-.station-icon.victoria {
-  color: var(--victoria);
-}
-
-.station-icon.waterloo-city {
-  color: var(--waterloo-city);
-}
+.station-icon.dlr {color: var(--dlr); }
+.station-icon.elizabeth {color: var(--elizabeth); }
+.station-icon.jubilee {color: var(--jubilee); }
+.station-icon.bakerloo {color: var(--bakerloo); }
+.station-icon.central {color: var(--central); }
+.station-icon.circle {color: var(--circle);}
+.station-icon.district {color: var(--district); }
+.station-icon.hammersmith-city {color: var(--hammersmith-city);}
+.station-icon.metropolitan {color: var(--metropolitan); }
+.station-icon.northern {color: var(--northern); border: 1px solid var(--border-color); }
+.station-icon.piccadilly {color: var(--piccadilly); }
+.station-icon.victoria {color: var(--victoria); }
+.station-icon.waterloo-city {color: var(--waterloo-city);}
 
 .roundel {
-  width: 88%;
-  height: 88%;
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
 .station-name {
-  font-size: 1.125rem;
+  font-size: var(--text-main);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -449,13 +335,11 @@ main {
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 .loading-text {
-  font-size: 0.875rem;
+  font-size: var(--text-sub);
   color: var(--text-secondary);
 }
 
@@ -463,7 +347,7 @@ main {
 .status-message {
   text-align: center;
   padding: 2rem 1rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sub);
   color: var(--text-muted);
 }
 
@@ -489,13 +373,13 @@ main {
 }
 
 .arrival-destination {
-  font-size: 0.9375rem;
+  font-size: var(--text-main);
   font-weight: 500;
   color: var(--text-primary);
 }
 
 .arrival-time {
-  font-size: 1rem;
+  font-size: var(--text-main);
   font-weight: 600;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
@@ -513,27 +397,32 @@ main {
 }
 
 .empty-icon {
-  font-size: 3rem;
+  font-size: var(--text-main);
   margin-bottom: 1rem;
   opacity: 0.3;
 }
 
 .empty-text {
-  font-size: 0.875rem;
+  font-size: var(--text-sub);
 }
 
 /* Responsive adjustments */
-@media (max-width: 400px) {
-  html {
-    font-size: 14px;
-  }
-
+@media (max-width: 1000px) {
   main {
     padding: 0.75rem;
   }
-
+  
   .station-card {
     border-radius: 0.75rem;
+  }
+}
+
+@media (min-width: 1000px) {
+  :root {
+    --text-main: 1.25rem;
+    --text-sub: 1rem;
+    --text-label: 0.875rem;
+    --text-title: 2rem;
   }
 }
 

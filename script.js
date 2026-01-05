@@ -139,20 +139,26 @@ async function fetchLineDisruptions() {
 }
 
 function renderDisruptions() {
-    const container = document.getElementById("disruptions-content");
-    container.innerHTML = disruptions
-        .map(
-            (item) => `
-    <div class="disruption-item">
-      <div class="disruption-line">
-        <span class="line-badge ${item.line}"></span>
-        ${item.line.charAt(0).toUpperCase() + item.line.slice(1)} Line
-      </div>
-      <div class="disruption-text">${item.description}</div>
-    </div>
-  `,
-        )
-        .join("");
+  const container = document.getElementById("disruptions-content");
+
+  container.innerHTML = disruptions
+    .map((item) => {
+      const cleanedDescription = item.description.replace(
+        /^[A-Za-z\s]+Line:\s*/i,
+        ""
+      );
+
+      return `
+        <div class="disruption-item">
+          <div class="disruption-line">
+            <span class="line-badge ${item.line}"></span>
+            ${item.line.charAt(0).toUpperCase() + item.line.slice(1)} Line
+          </div>
+          <div class="disruption-text">${cleanedDescription}</div>
+        </div>
+      `;
+    })
+    .join("");
 }
 
 // Station rendering functions
@@ -177,14 +183,7 @@ async function createStationCard(stopPoint) {
         }
     }
 
-    // Get line abbreviation for icon
-    const lineAbbr =
-        stopPoint.line === "elizabeth"
-            ? "EL"
-            : stopPoint.line === "dlr"
-                ? "DLR"
-                : stopPoint.line.substring(0, 2).toUpperCase();
-
+    // Build card 
     card.innerHTML = `
     <div class="line-indicator ${stopPoint.line}"></div>
     <div class="station-header">
