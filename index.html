@@ -1,43 +1,45 @@
-<!DOCTYPE html>
-<html>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" type="text/css" />
 
-<head>
-  <title>TfL Arrival Times</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="style.css" type="text/css" />
-</head>
+<header>
+  <h1>TfL Live Arrivals</h1>
+  <p class="subtitle">
+    <a href="https://github.com/Spectre0100/Spectre0100.github.io">by Spectre0100</a>
+  </p>
+</header>
 
-<body>
+<main>
+  <!-- TfL Roundel SVG -->
+  <svg width="0" height="0" style="position:absolute">
+    <symbol id="tfl-roundel" viewBox="0 0 512 512">
+      <!-- Outer ring -->
+      <circle cx="256" cy="256" r="170" fill="none" stroke="currentColor" stroke-width="72" />
 
-  <!-- Header Section -->
-  <header>
-    <h1>
-      TfL Arrival Times
-    </h1>
-    <p class="status">
-      <a href="https://github.com/Spectre0100/Spectre0100.github.io">
-        By Spectre0100
-      </a>
-    </p>
-  </header>
+      <!-- Horizontal bar -->
+      <rect x="0" y="228" width="512" height="72" rx="0" fill="currentColor" />
+    </symbol>
+  </svg>
 
-  <!-- Body section -->
-  <main>
-    <div id="disruptions-container">
-      <span id='disruptions-container-title'>⚠️ Disruptions</span>
-      <br>
-      <span class='subtext'>(click to expand)</span>
-      <br><br>
+  <div class="update-indicator">
+    <span class="update-dot"></span>
+    <span id="last-updated">Connecting...</span>
+  </div>
+
+  <div id="disruptions-banner" class="disruptions-banner hidden">
+    <div class="disruptions-header" onclick="toggleDisruptions()">
+      <div class="disruptions-title">
+        <span class="disruptions-icon">⚠️</span>
+        <span>Disruptions</span>
+      </div>
+      <span class="expand-icon" id="expand-icon">▶</span>
     </div>
-  </main>
+    <div class="disruptions-hint" , id="disruptions-hint">Tap to view details</div>
+    <div class="disruptions-content" id="disruptions-content"></div>
+  </div>
 
-  <script src="script.js"></script>
+  <div id="stations-container"></div>
+</main>
 
-</body>
-
-</html>
+<script src="script.js"></script>

@@ -1,259 +1,290 @@
-// StopPoint Objects for each station
-class StopPoint {
-    constructor(code, line, id, direction) {
-        this.code = code; // 3 letter code of stop
-        this.line = line; // Tube line, Elizabeth or DLR
-        this.id = id; // TfL StopPoint ID
-        this.direction = direction; // "inbound" or "outbound" 
-        this.url = `https://api.tfl.gov.uk/Line/${this.line}/Arrivals/${this.id}?direction=${this.direction}`; // URL for arrival times API
-    }
-}
+// ==================================================
+// CONFIGURATION - Add/remove stations and lines
+// ==================================================
 
-// Add new stations and lines here /////////////////////////
-const BLA = new StopPoint("bla", "dlr", "940GZZDLBLA", "inbound");
-const CAN = new StopPoint("can", "elizabeth", "910GCANWHRF", "outbound");
-const BST = new StopPoint("bst", "elizabeth", "910GBONDST", "inbound");
-const TOT = new StopPoint("tot", "elizabeth", "910GTOTCTRD", "inbound");
-const CYF = new StopPoint("cyf", "jubilee", "940GZZLUCYF", "inbound");
+const CONFIG = {
+    // Define stations
+    // Format: { code, line, id (TfL API), direction, displayName }
+    stations: [
+        {
+            code: "wmb",
+            line: "metropolitan",
+            id: "940GZZLUWYP",
+            direction: "outbound",
+            displayName: "Wembley Park",
+        },
+        {
+            code: "wyp",
+            line: "jubilee",
+            id: "940GZZLUWYP",
+            direction: "outbound",
+            displayName: "Wembley Park",
+        },
+        {
+            code: "tot",
+            line: "elizabeth",
+            id: "910GTOTCTRD",
+            direction: "inbound",
+            displayName: "Tottenham Court Road",
+        },
+        {
+            code: "can",
+            line: "elizabeth",
+            id: "910GCANWHRF",
+            direction: "outbound",
+            displayName: "Canary Wharf",
+        },
+        {
+            code: "cyf",
+            line: "jubilee",
+            id: "940GZZLUCYF",
+            direction: "inbound",
+            displayName: "Canary Wharf",
+        },
+    ],
 
-const STOP_POINTS = [BLA, CAN, BST, TOT, CYF];
-const LINES = ["elizabeth", "dlr", "jubilee"];
-//////////////////////////////////////////////////
+    // Define line colors
+    lineColors: {
+        // 'dlr': '#00AFAD',
+        elizabeth: "#60399E",
+        jubilee: "#838D93",
+        metropolitan: "#9b0056",
+    },
 
-// Create disruption description paragraphs
-var DISRUPTIONS = LINES.map(line => {
-    return {
-        line: line,
-        description: "empty"
-    };
-})
-
-// Global flag for any disruption on any line, used to show/hide disruption container
-var DISRUPTION_FLAG = false;
-
-// Need to wait for tables to be created first before populating them
-async function main() {
-    for (stop of STOP_POINTS) {
-        await createArrivalsTable(stop);
-        getArrivalsTable(stop);
-    }
-}
-
-//// RUN ON WINDOW LOAD
-window.onload = () => {
-    // Call function to create and get disruptions
-    createLineDisruptions();
-
-    // Call function to get arrivals tables for each stop
-    main();
+    // Refresh interval in milliseconds
+    refreshInterval: 5000,
 };
 
-//// UTILITY FUNCTONS
+// ==================================================
+// MAIN CODE
+// ==================================================
 
-// Simplifies station names
-getName = function(s) {
-    return s.replace(/ Underground| Station| Rail| DLR/g, '')
+class StopPoint {
+    constructor(config) {
+        this.code = config.code;
+        this.line = config.line;
+        this.id = config.id;
+        this.direction = config.direction;
+        this.displayName = config.displayName || null;
+        this.url = `https://api.tfl.gov.uk/Line/${this.line}/Arrivals/${this.id}?direction=${this.direction}`;
+    }
 }
 
-// Set timer between fetch requests
+// Initialise stop points and get unique lines
+const STOP_POINTS = CONFIG.stations.map((station) => new StopPoint(station));
+const LINES = [...new Set(CONFIG.stations.map((s) => s.line))];
+
+let disruptions = [];
+
+// Utility functions
+function getName(s) {
+    return s.replace(/ Underground| Station| Rail| DLR/g, "");
+}
+
 function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-//// DISRUPTION FUNCTONS
-
-// Create HTML disruption paragraphs
-async function createLineDisruptions() {
-    // Wait to get data first before setting the text
-    await getLineDisruptions(LINES);
-
-    const container = document.getElementById('disruptions-container');
-
-    // Only need to run if there is a disruption!
-    if (DISRUPTION_FLAG == false) {
-        container.style.display = "none";
-        return;
-    }
-
-    // Now we have at least one disruption, so show the container
-    DISRUPTIONS.forEach(item => {
-        // Create the title div
-        const titleDiv = document.createElement('div');
-        titleDiv.className = `disruption-title`;
-        titleDiv.id = `${item.line}-disruption-title`;
-        // Add line-coloured dot
-        const dot = document.createElement('span');
-        dot.classList = `dot ${item.line}`;
-        titleDiv.appendChild(dot);
-
-        // Append the line name text node separately
-        const lineText = document.createTextNode(item.line.toUpperCase());
-        titleDiv.appendChild(lineText);
-
-        titleDiv.onclick = () => toggleParagraph(`${item.line}-disruption-desc`);
-        // Create the content div
-        const descDiv = document.createElement('p');
-        descDiv.classList = 'disruption-desc status';
-        descDiv.id = `${item.line}-disruption-desc`;
-        descDiv.textContent = item.description;
-
-        // Append to the container and hide text
-        container.appendChild(titleDiv);
-        container.appendChild(descDiv);
-        document.getElementById(`${item.line}-disruption-desc`).style.display = "none";
-
-        // Display disruptions only if there is one
-        if (item.description == "empty") {
-            document.getElementById(`${item.line}-disruption-title`).style.display = "none";
-        }
+function updateLastUpdatedTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
     });
+    document.getElementById("last-updated").textContent = `Updated at ${timeStr}`;
 }
 
-// Get and write line disruption data
-async function getLineDisruptions(lines) {
-    let disruption_url = `https://api.tfl.gov.uk/Line/${lines}/Status`;
-    const disruption_response = await fetch(disruption_url);
-    const disruption_data = await disruption_response.json();
-
-    // Keep track if any disruption
-    for (const line of disruption_data) {
-        lineStatus = line.lineStatuses[0];
-        // If we have a disruption, display this
-        if (lineStatus.statusSeverityDescription != "Good Service") {
-            // Set flag since we have a disruption
-            DISRUPTION_FLAG = true;
-            console.log(line.name, lineStatus.reason);
-            DISRUPTIONS.find(item => item.line == line.id).description = lineStatus.reason;
-        }
-    }
+// Disruptions functions
+function toggleDisruptions() {
+    const content = document.getElementById("disruptions-content");
+    const icon = document.getElementById("expand-icon");
+    const text = document.getElementById("disruptions-hint");
+    content.classList.toggle("expanded");
+    icon.classList.toggle("expanded");
+    text.classList.toggle("hidden");
 }
 
-// Toggle visibility of description on click
-function toggleParagraph(id) {
-    const content = document.getElementById(id);
-    if (content.style.display === "none" || content.style.display === "") {
-        content.style.display = "block";
-    } else {
-        content.style.display = "none";
-    }
-}
-
-//// FUNCTIONS FOR CREATING HTML ELEMENTS
-
-// Create HTML arrivals tables
-async function createArrivalsTable(stopPoint) {
-    // Check if the elements already exist
-    if (!document.getElementById(`${stopPoint.code} - title`)) {
-        // Fetch and set station name for table title
-        const main = document.getElementsByTagName('main')[0];
-
-        const title = document.createElement('p');
-        title.classList.add(`${stopPoint.line}`, 'header'); // Add table header classes
-        title.id = `${stopPoint.code} - title`; // Add table header id
-        const stopName_response = await fetch(`https://api.tfl.gov.uk/StopPoint/${stopPoint.id}`);
-        const stopName = await stopName_response.json();
-        title.textContent = getName(stopName.commonName);
-        main.appendChild(title);
-
-        // Create loading div and add classes + id
-        const loading = document.createElement('div');
-        loading.classList.add('loading');
-        loading.id = `${stopPoint.code}-loading`;
-        main.appendChild(loading);
-
-        // Create station status paragraph (e.g. "no data", failure)
-        const status = document.createElement('p');
-        status.classList.add('status');
-        status.id = `${stopPoint.code}-status`;
-        main.appendChild(status);
-
-        // Create table for arrival entries
-        const table = document.createElement('table');
-        table.classList.add('fixed');
-        const tableHead = document.createElement('thead');
-        const tableBody = document.createElement('tbody');
-        tableBody.id = `${stopPoint.code}-table`;
-        table.appendChild(tableHead);
-        table.appendChild(tableBody);
-        main.appendChild(table);
-    }
-}
-
-// Get and write the arrivals data
-async function getArrivalsTable(stopPoint) {
+async function fetchLineDisruptions() {
     try {
-        // Show loading while fetching data
-        loading = document.getElementById(`${stopPoint.code}-loading`);
-        loading.style.display = "block";
+        const url = `https://api.tfl.gov.uk/Line/${LINES.join(",")}/Status`;
+        const response = await fetch(url);
+        const data = await response.json();
 
-        // Fetch data
-        const arrivals_response = await fetch(stopPoint.url);
-        const arrivals_data = await arrivals_response.json();
+        disruptions = [];
+        let hasDisruption = false;
 
-        // Hide loading message when data is fetched
-        loading.style.display = "none";
-
-        // Retrieved no data, e.g. service is closed 
-        if (arrivals_data.length == 0) {
-            document.getElementById(`${stopPoint.code}-status`).innerHTML = "No data.";
-            return;
-        }
-
-        // Format arrivals data
-        let arrivals = [];
-        for (const arrival of arrivals_data) {
-            seconds = arrival.timeToStation;
-            // Add flag to indicate seconds or minutes
-            if (seconds < 60) {
-                arrivals.push({
-                    'dest': getName(arrival.destinationName),
-                    'time': seconds,
-                    'secFlag': true
-                });
-            } else {
-                arrivals.push({
-                    'dest': getName(arrival.destinationName),
-                    'time': seconds,
-                    'secFlag': false
+        for (const line of data) {
+            const lineStatus = line.lineStatuses[0];
+            if (lineStatus.statusSeverityDescription !== "Good Service") {
+                hasDisruption = true;
+                disruptions.push({
+                    line: line.id,
+                    description:
+                        lineStatus.reason || lineStatus.statusSeverityDescription,
                 });
             }
         }
-        // Sort arrivals closest first and display next 3 max
-        arrivals.sort((a, b) => a.time - b.time);
-        arrivals = arrivals.slice(0, 3);
-        // console.log(arrivals);
 
-        // Clear table to update with new data
-        const tableBody = document.getElementById(`${stopPoint.code}-table`);
-        tableBody.innerHTML = "";
-
-        // Write to table
-        for (const arrival of arrivals) {
-            const row = document.createElement('tr');
-            const destinationCell = document.createElement('td');
-            destinationCell.textContent = arrival.dest;
-            const timeToArrivalCell = document.createElement('td');
-            // If less than 60 seconds display seconds, else minutes 
-            timeToArrivalCell.textContent = arrival.secFlag ? arrival.time + " sec" : Math.round(arrival.time / 60) + " min";
-            row.appendChild(destinationCell);
-            row.appendChild(timeToArrivalCell);
-            tableBody.appendChild(row);
+        const banner = document.getElementById("disruptions-banner");
+        if (hasDisruption) {
+            banner.classList.remove("hidden");
+            renderDisruptions();
+        } else {
+            banner.classList.add("hidden");
         }
-
     } catch (error) {
-        // Error fetching data
-        console.log(error);
+        console.error("Error fetching disruptions:", error);
+    }
+}
 
-        // DLR stations may encounter TypeErrors when fetching
-        if (error instanceof TypeError) {
-            document.getElementById(`${stopPoint.code}-status`).innerHTML = "Failed to fetch.";
+function renderDisruptions() {
+    const container = document.getElementById("disruptions-content");
+    container.innerHTML = disruptions
+        .map(
+            (item) => `
+    <div class="disruption-item">
+      <div class="disruption-line">
+        <span class="line-badge ${item.line}"></span>
+        ${item.line.charAt(0).toUpperCase() + item.line.slice(1)} Line
+      </div>
+      <div class="disruption-text">${item.description}</div>
+    </div>
+  `,
+        )
+        .join("");
+}
+
+// Station rendering functions
+async function createStationCard(stopPoint) {
+    const container = document.getElementById("stations-container");
+
+    const card = document.createElement("div");
+    card.className = `station-card ${stopPoint.line}`;
+    card.id = `station-${stopPoint.code}`;
+
+    // Get station name
+    let stationName = stopPoint.displayName;
+    if (!stationName) {
+        try {
+            const response = await fetch(
+                `https://api.tfl.gov.uk/StopPoint/${stopPoint.id}`,
+            );
+            const data = await response.json();
+            stationName = getName(data.commonName);
+        } catch (error) {
+            stationName = stopPoint.code.toUpperCase();
+        }
+    }
+
+    // Get line abbreviation for icon
+    const lineAbbr =
+        stopPoint.line === "elizabeth"
+            ? "EL"
+            : stopPoint.line === "dlr"
+                ? "DLR"
+                : stopPoint.line.substring(0, 2).toUpperCase();
+
+    card.innerHTML = `
+    <div class="line-indicator ${stopPoint.line}"></div>
+    <div class="station-header">
+        <div class="station-icon ${stopPoint.line}">
+            <svg class="roundel" viewBox="0 0 512 512" aria-hidden="true">
+                <use href="#tfl-roundel"></use>
+            </svg>
+        </div>
+        <div class="station-name">${stationName}</div>
+    </div>
+    <div class="station-body" id="body-${stopPoint.code}">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Loading arrivals...</span>
+        </div>
+    </div>
+  `;
+
+    container.appendChild(card);
+}
+
+async function updateArrivals(stopPoint) {
+    const bodyEl = document.getElementById(`body-${stopPoint.code}`);
+
+    try {
+        const response = await fetch(stopPoint.url);
+        const data = await response.json();
+
+        if (data.length === 0) {
+            bodyEl.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🚇</div>
+          <div class="empty-text">No arrivals data</div>
+        </div>
+      `;
             return;
         }
 
-        throw new Error("Error fetching arrivals data.");
+        // Format and sort arrivals
+        let arrivals = data
+            .map((arrival) => ({
+                dest: getName(arrival.destinationName),
+                time: arrival.timeToStation,
+            }))
+            .sort((a, b) => a.time - b.time)
+            .slice(0, 3);
+
+        // Render arrivals
+        bodyEl.innerHTML = `
+      <div class="arrivals-list">
+        ${arrivals
+                .map((arrival) => {
+                    const isUrgent = arrival.time < 60;
+                    const timeText = isUrgent
+                        ? `${arrival.time}s`
+                        : `${Math.round(arrival.time / 60)} min`;
+
+                    return `
+            <div class="arrival-row">
+              <div class="arrival-destination">${arrival.dest}</div>
+              <div class="arrival-time ${isUrgent ? "urgent" : ""}">${timeText}</div>
+            </div>
+          `;
+                })
+                .join("")}
+      </div>
+    `;
+    } catch (error) {
+        console.error(`Error fetching arrivals for ${stopPoint.code}:`, error);
+        bodyEl.innerHTML = `
+      <div class="status-message">
+        Unable to load arrivals. Retrying...
+      </div>
+    `;
+    }
+}
+
+// Main execution
+async function initialise() {
+    // Create all station cards
+    for (const stop of STOP_POINTS) {
+        await createStationCard(stop);
     }
 
-    // Fetch new data every 5 seconds
-    await timeout(5000);
-    getArrivalsTable(stopPoint);
+    // Initial data fetch
+    await fetchLineDisruptions();
+    for (const stop of STOP_POINTS) {
+        await updateArrivals(stop);
+    }
+    updateLastUpdatedTime();
+
+    // Set up refresh cycle
+    setInterval(async () => {
+        await fetchLineDisruptions();
+        for (const stop of STOP_POINTS) {
+            await updateArrivals(stop);
+        }
+        updateLastUpdatedTime();
+    }, CONFIG.refreshInterval);
 }
+
+// Start on page load
+window.addEventListener("DOMContentLoaded", initialise);
