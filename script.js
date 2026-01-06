@@ -75,6 +75,14 @@ class StopPoint {
 const STOP_POINTS = CONFIG.stations.map((station) => new StopPoint(station));
 const LINES = [...new Set(CONFIG.stations.map((s) => s.line))];
 
+// Define order for the timetable days
+const DAY_ORDER = {
+    "Monday - Thursday": 1,
+    "Friday": 2,
+    "Saturday (also Good Friday)": 3,
+    "Sunday": 4
+};
+
 // Initialise variables for timetable and disruption data
 let timetableData = {};
 let disruptions = [];
@@ -320,15 +328,21 @@ function renderTimetableModal(stopCode, data) {
     
     // Render each route
     const routesHTML = data.routes.map(route => {
-        const schedulesHTML = route.schedules.map(schedule => `
-            <tr>
-                <td class="schedule-day">${schedule.name}</td>
-                <td class="schedule-time">${schedule.firstService}</td>
-                <td class="schedule-time">${schedule.lastService}</td>
-                <td class="schedule-terminal">${schedule.terminalName || 'N/A'}</td>
-            </tr>
-        `).join('');
-        
+        const schedulesHTML = route.schedules
+            .slice() // avoid changing original array
+            .sort((a, b) => {
+                return (DAY_ORDER[a.name] ?? 99) - (DAY_ORDER[b.name] ?? 99);
+            })
+            .map(schedule => `
+                <tr>
+                    <td class="schedule-day">${schedule.name}</td>
+                    <td class="schedule-time">${schedule.firstService}</td>
+                    <td class="schedule-time">${schedule.lastService}</td>
+                    <td class="schedule-terminal">${schedule.terminalName || 'N/A'}</td>
+                </tr>
+            `)
+            .join('');
+
         return `
             <div class="timetable-section">
                 ${data.routes.length > 1 ? `<h4>To ${route.schedules[0]?.terminalName || 'Unknown'}</h4>` : ''}
@@ -404,7 +418,7 @@ async function createStationCard(stopPoint) {
     modal.id = `modal-${stopPoint.code}`;
     modal.innerHTML = `
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" >
                 <h3>First/Last Trains</h3>
                 <button class="modal-close" onclick="closeTimetableModal('${stopPoint.code}')">&times;</button>
             </div>
