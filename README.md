@@ -4,6 +4,10 @@ A webpage which uses the TfL API to display the next arrival times at stations. 
 ## Version 0.4
 Added button to show timetables for the first and last trains at each station.
 
+### Known Issues
+- Wembley Park Metropolitan station shows an incorrect time for the last service to Baker Street, and also only has Monday-Thursday times (API issue)
+- Elizabeth line stations do not have any timetable info (also an API issue)
+
 ## Version 0.3
 Complete design and code overhaul with a more modern UI.
 
