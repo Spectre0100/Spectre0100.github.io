@@ -240,7 +240,6 @@ main {
 
 .station-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .station-header {
@@ -369,7 +368,7 @@ main {
 }
 
 .arrival-row:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .arrival-destination {
@@ -397,9 +396,8 @@ main {
 }
 
 .empty-icon {
-  font-size: var(--text-main);
-  margin-bottom: 1rem;
-  opacity: 0.3;
+  font-size: 3rem;
+  opacity: 0.5;
 }
 
 .empty-text {
