@@ -52,7 +52,7 @@ const CONFIG = {
     },
 
     // Refresh interval in milliseconds
-    refreshInterval: 5000,
+    refreshInterval: 10000,
 };
 
 // ==================================================
