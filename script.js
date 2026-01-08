@@ -4,7 +4,6 @@
 
 const CONFIG = {
     // Define stations
-    // Format: { code, line, id (TfL API), direction, displayName }
     stations: [
         {
             code: "wmb",
@@ -45,10 +44,19 @@ const CONFIG = {
 
     // Define line colors
     lineColors: {
-        // 'dlr': '#00AFAD',
+        bakerloo: "#B26300",
+        central: "#DC241F",
+        circle: "#FFC80A",
+        district: "#007D32",
+        dlr: '#00AFAD',
         elizabeth: "#60399E",
+        hammersmith_city: "#F589A6",
         jubilee: "#838D93",
         metropolitan: "#9b0056",
+        northern: "#000000",
+        piccadilly: "#0019A8",
+        victoria: "#039BE5",
+        waterloo_city: "#76D0BD"
     },
 
     // Refresh interval in milliseconds
@@ -128,9 +136,12 @@ function toggleDisruptions() {
     const content = document.getElementById("disruptions-content");
     const icon = document.getElementById("expand-icon");
     const text = document.getElementById("disruptions-hint");
+    const line_badges = document.getElementById("disruptions-title-badges");
+
     content.classList.toggle("expanded");
     icon.classList.toggle("expanded");
     text.classList.toggle("hidden");
+    line_badges.classList.toggle("hidden");
 }
 
 async function fetchLineDisruptions() {
@@ -210,28 +221,28 @@ async function fetchFirstLastServices(stopPoint) {
     try {
         const response = await fetch(stopPoint.timetableUrl);
         const data = await response.json();
-        
+
         // Get routes and stations
         const routes = data.timetable.routes;
-        
+
         if (!routes || routes.length === 0) {
             console.log("No routes found");
             return null;
         }
-        
+
         // Helper function to format journey times
         const formatTime = (journey) => {
             let hour = parseInt(journey.hour);
             const minute = journey.minute.padStart(2, '0');
-            
+
             // Handle times after midnight (hour >= 24)
             if (hour >= 24) {
                 hour = hour - 24;
             }
-            
+
             return `${hour.toString().padStart(2, '0')}:${minute}`;
         };
-        
+
         // Process each route
         const routesData = await Promise.all(
             routes.map(async (route, routeIndex) => {
@@ -255,7 +266,7 @@ async function fetchFirstLastServices(stopPoint) {
                     // Get the first journey's intervalId to match with terminal
                     const firstJourneyIntervalId = schedule.firstJourney.intervalId || "0";
                     const terminal = terminals.find(t => t.routeId === firstJourneyIntervalId);
-                    
+
                     return {
                         name: schedule.name,
                         firstService: formatTime(schedule.firstJourney),
@@ -264,14 +275,14 @@ async function fetchFirstLastServices(stopPoint) {
                         terminalName: terminal ? terminal.terminalName : null
                     };
                 });
-                
+
                 return {
                     routeIndex: routeIndex,
                     schedules: schedulesData
                 };
             })
         );
-        
+
         console.log({
             station: stopPoint.displayName,
             line: stopPoint.line,
@@ -285,7 +296,7 @@ async function fetchFirstLastServices(stopPoint) {
             direction: stopPoint.direction,
             routes: routesData
         };
-        
+
     } catch (error) {
         console.error(`Error fetching first/last services for ${stopPoint.displayName}:`, error);
         return null;
@@ -294,7 +305,14 @@ async function fetchFirstLastServices(stopPoint) {
 
 function renderDisruptions() {
     const container = document.getElementById("disruptions-content");
+    const linesContainer = document.querySelector('.disruptions-title-badges');
 
+    // Line badges
+    linesContainer.innerHTML = disruptions
+        .map(item => `<span class="line-badge ${item.line}"></span>`)
+        .join('');
+
+    // Disruption details
     container.innerHTML = disruptions
         .map((item) => {
             const cleanedDescription = item.description.replace(
@@ -304,7 +322,7 @@ function renderDisruptions() {
 
             return `
         <div class="disruption-item">
-          <div class="disruption-line">
+          <div class="disruption-detail">
             <span class="line-badge ${item.line}"></span>
             ${item.line.charAt(0).toUpperCase() + item.line.slice(1)} Line
           </div>
@@ -318,14 +336,14 @@ function renderDisruptions() {
 function renderTimetableModal(stopCode, data) {
     const modalBody = document.getElementById(`modal-body-${stopCode}`);
     const button = document.getElementById(`timetable-btn-${stopCode}`);
-    
+
     if (!data || !data.routes || data.routes.length === 0) {
         return;
     }
-    
+
     // Show the button
     button.style.display = 'block';
-    
+
     // Render each route
     const routesHTML = data.routes.map(route => {
         const schedulesHTML = route.schedules
@@ -362,7 +380,7 @@ function renderTimetableModal(stopCode, data) {
             </div>
         `;
     }).join('');
-    
+
     modalBody.innerHTML = routesHTML;
 }
 
@@ -463,18 +481,18 @@ async function updateArrivals(stopPoint) {
         body_code.innerHTML = `
         <div class="arrivals-list">
             ${arrivals
-                    .map((arrival) => {
-                        const isUrgent = arrival.time < 60;
-                        const timeText = isUrgent
-                            ? `${arrival.time}s`
-                            : `${Math.round(arrival.time / 60)} min`;
+                .map((arrival) => {
+                    const isUrgent = arrival.time < 60;
+                    const timeText = isUrgent
+                        ? `${arrival.time}s`
+                        : `${Math.round(arrival.time / 60)} min`;
 
-                        return `
+                    return `
                         <div class="arrival-row">
                             <div class="arrival-destination">${arrival.dest}</div>
                             <div class="arrival-time ${isUrgent ? "urgent" : ""}">${timeText}</div>
                         </div>`;
-                    }).join("")
+                }).join("")
             }
         </div>`;
     } catch (error) {
