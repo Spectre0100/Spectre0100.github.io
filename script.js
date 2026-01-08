@@ -92,7 +92,7 @@ const DAY_ORDER = {
 };
 
 // Initialise variables for timetable and disruption data
-let timetableData = {};
+const timetableCache = new Map();
 let disruptions = [];
 let stopPointNameCache = {};
 
@@ -115,28 +115,145 @@ function updateLastUpdatedTime() {
     document.getElementById("last-updated").textContent = `Updated at ${timeStr}`;
 }
 
-function openTimetableModal(stopCode) {
-    const modal = document.getElementById(`modal-${stopCode}`);
-    if (modal) {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+function toTitleCase(str) {
+    return str.replace(
+        /\w\S*/g,
+        text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+    );
+}
+
+// Modal functions
+async function openTimetableModal(stopCode) {
+    const modal = document.getElementById('timetable-modal');
+    const modalBody = document.getElementById('modal-body');
+    const modalTitle = document.getElementById('modal-title');
+
+    // Show modal with loading state
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    modalBody.innerHTML = `
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Loading timetable...</span>
+        </div>
+    `;
+
+    // Get stop point details
+    const stopPoint = STOP_POINTS.find(s => s.code === stopCode);
+    modalTitle.textContent = `${stopPoint.displayName} - ${toTitleCase(stopPoint.line)}`;
+
+    // Load data (from cache or API)
+    const data = await loadTimetableData(stopCode);
+
+    // Render content
+    if (data && data.routes && data.routes.length > 0) {
+        renderTimetableContent(modalBody, data);
+    } else {
+        modalBody.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <div class="empty-text">No timetable data available</div>
+            </div>
+        `;
     }
 }
 
-function closeTimetableModal(stopCode) {
+function closeModal() {
     // Close on clicking outside modal
     document.addEventListener("click", (event) => {
-        if (event.target.id !== `modal-${stopCode}`) {
+        if (event.target.id !== `timetable-modal`) {
             return;
         }
     });
 
-    const modal = document.getElementById(`modal-${stopCode}`);
-    
+    const modal = document.getElementById('timetable-modal');
     if (modal) {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
     }
+}
+
+function renderTimetableContent(container, data) {
+    const routesHTML = data.routes.map(route => {
+        const schedulesHTML = route.schedules
+            .slice()
+            .sort((a, b) => {
+                return (DAY_ORDER[a.name] ?? 99) - (DAY_ORDER[b.name] ?? 99);
+            })
+            .map(schedule => `
+                <tr>
+                    <td class="schedule-day">${schedule.name}</td>
+                    <td class="schedule-time">${schedule.firstService}</td>
+                    <td class="schedule-time">${schedule.lastService}</td>
+                    <td class="schedule-terminal">${schedule.terminalName || 'N/A'}</td>
+                </tr>
+            `)
+            .join('');
+
+        return `
+            <div class="timetable-section">
+                ${data.routes.length > 1 ? `<h4>To ${route.schedules[0]?.terminalName || 'Unknown'}</h4>` : ''}
+                <table class="timetable-table">
+                    <thead>
+                        <tr>
+                            <th>Days</th>
+                            <th>First</th>
+                            <th>Last</th>
+                            <th>Destination</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${schedulesHTML}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = routesHTML;
+}
+
+// Create single modal on page load
+function createTimetableModal() {
+    const modal = document.createElement('div');
+    modal.className = 'timetable-modal hidden';
+    modal.id = 'timetable-modal';
+    modal.onclick = (e) => {
+        if (e.target.id === 'timetable-modal') {
+            closeModal();
+        }
+    };
+    modal.innerHTML = `
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-title">First/Last Trains</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+async function loadTimetableData(stopCode) {
+    // Check cache first
+    if (timetableCache.has(stopCode)) {
+        return timetableCache.get(stopCode);
+    }
+
+    // Fetch and cache
+    const stopPoint = STOP_POINTS.find(s => s.code === stopCode);
+    const data = await fetchFirstLastServices(stopPoint);
+
+    if (data) {
+        timetableCache.set(stopCode, data);
+    }
+
+    return data;
 }
 
 // Disruptions functions
@@ -341,57 +458,6 @@ function renderDisruptions() {
         .join("");
 }
 
-function renderTimetableModal(stopCode, data) {
-    const modalBody = document.getElementById(`modal-body-${stopCode}`);
-    const button = document.getElementById(`timetable-btn-${stopCode}`);
-
-    if (!data || !data.routes || data.routes.length === 0) {
-        return;
-    }
-
-    // Show the button
-    button.style.display = 'block';
-
-    // Render each route
-    const routesHTML = data.routes.map(route => {
-        const schedulesHTML = route.schedules
-            .slice() // avoid changing original array
-            .sort((a, b) => {
-                return (DAY_ORDER[a.name] ?? 99) - (DAY_ORDER[b.name] ?? 99);
-            })
-            .map(schedule => `
-                <tr>
-                    <td class="schedule-day">${schedule.name}</td>
-                    <td class="schedule-time">${schedule.firstService}</td>
-                    <td class="schedule-time">${schedule.lastService}</td>
-                    <td class="schedule-terminal">${schedule.terminalName || 'N/A'}</td>
-                </tr>
-            `)
-            .join('');
-
-        return `
-            <div class="timetable-section">
-                ${data.routes.length > 1 ? `<h4>To ${route.schedules[0]?.terminalName || 'Unknown'}</h4>` : ''}
-                <table class="timetable-table">
-                    <thead>
-                        <tr>
-                            <th>Days</th>
-                            <th>First</th>
-                            <th>Last</th>
-                            <th>Destination</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${schedulesHTML}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }).join('');
-
-    modalBody.innerHTML = routesHTML;
-}
-
 // Station rendering functions
 async function createStationCard(stopPoint) {
     const container = document.getElementById("stations-container");
@@ -437,27 +503,6 @@ async function createStationCard(stopPoint) {
     `;
 
     container.appendChild(card);
-
-    // Create modal outside the card
-    const modal = document.createElement('div');
-    modal.className = 'timetable-modal hidden';
-    modal.id = `modal-${stopPoint.code}`;
-    modal.onclick = () => closeTimetableModal(stopPoint.code);
-    modal.innerHTML = `
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header" >
-                <h3>First/Last Trains</h3>
-                <button class="modal-close" onclick="closeTimetableModal('${stopPoint.code}')">&times;</button>
-            </div>
-            <div class="modal-body" id="modal-body-${stopPoint.code}">
-                <div class="loading-container">
-                    <div class="loading-spinner"></div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
 }
 
 async function updateArrivals(stopPoint) {
@@ -521,13 +566,19 @@ async function initialise() {
         await createStationCard(stop);
     }
 
-    // Fetch timetable data
+    // Create modal for first/last train times
+    createTimetableModal();
+
+    // Fetch timetable data and show buttons
     for (const stop of STOP_POINTS) {
         if (stop.timetableUrl) {
-            const data = await fetchFirstLastServices(stop);
-            if (data) {
-                timetableData[stop.code] = data;
-                renderTimetableModal(stop.code, data);
+            const data = await loadTimetableData(stop.code);
+            if (data && data.routes && data.routes.length > 0) {
+                // Show the timetable button
+                const button = document.getElementById(`timetable-btn-${stop.code}`);
+                if (button) {
+                    button.style.display = 'block';
+                }
             }
         }
     }
