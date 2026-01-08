@@ -124,7 +124,15 @@ function openTimetableModal(stopCode) {
 }
 
 function closeTimetableModal(stopCode) {
+    // Close on clicking outside modal
+    document.addEventListener("click", (event) => {
+        if (event.target.id !== `modal-${stopCode}`) {
+            return;
+        }
+    });
+
     const modal = document.getElementById(`modal-${stopCode}`);
+    
     if (modal) {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
@@ -434,8 +442,9 @@ async function createStationCard(stopPoint) {
     const modal = document.createElement('div');
     modal.className = 'timetable-modal hidden';
     modal.id = `modal-${stopPoint.code}`;
+    modal.onclick = () => closeTimetableModal(stopPoint.code);
     modal.innerHTML = `
-        <div class="modal-content">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header" >
                 <h3>First/Last Trains</h3>
                 <button class="modal-close" onclick="closeTimetableModal('${stopPoint.code}')">&times;</button>
