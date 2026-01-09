@@ -1,5 +1,21 @@
-# TfL station arrival times
-A webpage which uses the TfL API to display the next arrival times at stations. Works for the London Underground, DLR and Elizabeth Lines.
+# TfL Live Arrivals
+A lightweight webpage which uses the TfL API to display the next train arrival times at stations. Works for the London Underground, DLR and Elizabeth Lines.
+
+## Version 0.5
+Added toggle for light and dark mode.
+
+### Preview
+
+#### Light theme
+![Preview Light Theme](previews/v0-5-preview-light-theme.png)
+
+#### Dark theme
+![Preview Dark Theme](previews/v0-5-preview-dark-theme.png)
+
+### Known Issues
+- API issues persist:
+    - Sometimes null values are returned for destination stations of first/last trains
+    - Some first/last train times are still wrong
 
 ## Version 0.4
 Added button to show timetables for the first and last trains at each station.

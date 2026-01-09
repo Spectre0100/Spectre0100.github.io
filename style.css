@@ -59,6 +59,40 @@ body {
   min-height: 100vh;
 }
 
+body.light-theme {
+  --bg-primary: #efefef;
+  --bg-secondary: #f4f4f4;
+  --bg-card: #ffffff;
+  --text-primary: #0f0f0f;
+  --text-secondary: #404040;
+  --text-muted: #737373;
+  --border-color: #e5e5e5;
+  --accent: #3b82f6;
+  --warning: #f59e0b;
+  --error: #ef4444;
+}
+
+/* Light Theme */
+.theme-toggle {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  font-size: var(--text-sub);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  border: 1px solid var(--accent);
+}
+
+.theme-icon {
+  font-size: 1.25rem;
+}
+
 /* Header */
 header {
   padding: 1.5rem 1rem 1rem;
@@ -311,7 +345,7 @@ main {
 }
 
 .timetable-button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  /* background: rgba(128, 128, 128, 0.15); */
   border-color: var(--accent);
 }
 
@@ -410,7 +444,7 @@ main {
 }
 
 .timetable-table thead {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(128, 128, 128, 0.15);
 }
 
 .timetable-table th {
@@ -419,7 +453,6 @@ main {
   font-size: var(--text-label);
   font-weight: 600;
   color: var(--text-secondary);
-  /* text-transform: uppercase; */
   letter-spacing: -0.025em;
 }
 
@@ -664,7 +697,7 @@ main {
 }
 
 .arrival-row:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(128, 128, 128, 0.15);
 }
 
 .arrival-destination {

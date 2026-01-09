@@ -347,11 +347,18 @@ async function fetchFirstLastServices(stopPoint) {
         const response = await fetch(stopPoint.timetableUrl);
         const data = await response.json();
 
-        // Get routes and stations
+        // First check if API responds with a timetable
+        // NOTE: Elizabeth line stations don't seem to have any timetable data
+        if (!Object.hasOwn(data, "timetable")) {
+            console.log(`No timetable found for ${stopPoint.displayName} ${toTitleCase(stopPoint.line)} line ${stopPoint.direction}.`);
+            return null;
+        }
+
+        // Get routes if available
         const routes = data.timetable.routes;
 
         if (!routes || routes.length === 0) {
-            console.log("No routes found");
+            console.log(`No routes found for ${stopPoint.displayName} ${toTitleCase(stopPoint.line)} line ${stopPoint.direction}.`);
             return null;
         }
 
@@ -559,8 +566,33 @@ async function updateArrivals(stopPoint) {
     }
 }
 
+// Light theme toggle
+function initTheme() {
+  // Check for saved theme preference, defaults to dark
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+  }
+  updateThemeIcon();
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light-theme');
+  const isLight = document.body.classList.contains('light-theme');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const icon = document.querySelector('.theme-icon');
+  const isLight = document.body.classList.contains('light-theme');
+  icon.textContent = isLight ? '🌙' : '☀️';
+}
+
 // Main execution
 async function initialise() {
+    initTheme();
+
     // Create all station cards
     for (const stop of STOP_POINTS) {
         await createStationCard(stop);
@@ -601,4 +633,11 @@ async function initialise() {
 }
 
 // Start on page load
-window.addEventListener("DOMContentLoaded", initialise);
+window.addEventListener("DOMContentLoaded", () => {
+  initialise();
+  
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+});
