@@ -88,7 +88,8 @@ const DAY_ORDER = {
     "Monday - Thursday": 1,
     "Friday": 2,
     "Saturday (also Good Friday)": 3,
-    "Sunday": 4
+    "Saturdays and Public Holidays": 4,
+    "Sunday": 5
 };
 
 // Initialise variables for timetable and disruption data
