@@ -1,0 +1,8 @@
+#Dinghy
+**/output/site
+
+# IDE
+.devcontainer.json
+
+# OS
+**/.DS_Store
