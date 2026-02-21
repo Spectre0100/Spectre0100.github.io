@@ -12,7 +12,8 @@ export default function Stations({ stations }: { stations: any }) {
           </div>
           <div className='station-body' id='body-wmb'>
             <div className='arrivals-list'>
-              {station.arrivals.map((arrival: any, index: number) => (
+            {station.arrivals.length === 0 && <div>No arrivals data</div> }
+              {station.arrivals.length > 0 && station.arrivals.map((arrival: any, index: number) => (
                 <div className='arrival-row' key={index}>
                   <div className='arrival-destination'>{arrival.dest}</div>
                   <div

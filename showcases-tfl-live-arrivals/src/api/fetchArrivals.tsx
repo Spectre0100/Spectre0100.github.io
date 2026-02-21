@@ -16,7 +16,9 @@ export function fetchArrivals(station: any, onSuccess: any) {
           .slice(0, 3)
         onSuccess({ ...station, arrivals })
       } else {
-        onSuccess(initialiseStation(station))
+        onSuccess({ ...station, arrivals: [] })
       }
+    }).catch((error) => {
+      onSuccess(initialiseStation(station))
     })
 }
