@@ -1,4 +1,6 @@
 #Dinghy
+tmp.*
+*.local
 **/output/site
 
 # IDE

@@ -1,66 +1,38 @@
-# Publish output/site to mrduguo.github.io/tfl-live-arrivals
-# Uses only official GitHub actions. Site is served from repo mrduguo/tfl-live-arrivals (GitHub Project Pages).
-#
-# Setup:
-# 1. Create repo mrduguo/tfl-live-arrivals and enable GitHub Pages (Settings → Pages → Source: Deploy from a branch → branch: gh-pages).
-# 2. In this repo, add secret MRDUGUO_REPO_TOKEN: a GitHub PAT with repo scope (from mrduguo or an account that can push to mrduguo/tfl-live-arrivals).
-
 name: Deploy TfL Live Arrivals to GitHub Pages
 
 on:
   push:
     branches: [main]
     paths:
-      - 'showcases-tfl-live-arrivals/**'
+      - "showcases-tfl-live-arrivals/**"
   workflow_dispatch:
 
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+  pages: write # to deploy to Pages
+
+env:
+  APP_HOME: showcases-tfl-live-arrivals
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # Build runs in Dinghy container; output is written to output/ (and often output/site).
-      - name: Build site
-        id: build
-        run: |
-          mkdir -p showcases-tfl-live-arrivals/output
-          docker run --rm \
-            -v "${{ github.workspace }}/showcases-tfl-live-arrivals:/opt/docusaurus" \
-            dinghydev/dinghy:site-7fa72e4683edfa185775ae380da8bff6 \
-            sh -c "npx docusaurus build 2>/dev/null || npm run build 2>/dev/null || echo 'No build command found; ensure output/site exists.'"
-          if [ -d "showcases-tfl-live-arrivals/output/site" ]; then
-            echo "publish_dir=showcases-tfl-live-arrivals/output/site" >> $GITHUB_OUTPUT
-          elif [ -d "showcases-tfl-live-arrivals/output/build" ]; then
-            echo "publish_dir=showcases-tfl-live-arrivals/output/build" >> $GITHUB_OUTPUT
-          else
-            echo "publish_dir=showcases-tfl-live-arrivals/output" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Deploy to mrduguo.github.io/tfl-live-arrivals
-        env:
-          GH_PAT: ${{ secrets.MRDUGUO_REPO_TOKEN }}
-        run: |
-          publish_dir="${{ steps.build.outputs.publish_dir }}"
-          if [ ! -d "$publish_dir" ]; then
-            echo "::error::Publish dir not found: $publish_dir"
-            exit 1
-          fi
-          git clone --depth 1 \
-            "https://x-access-token:${GH_PAT}@github.com/mrduguo/tfl-live-arrivals.git" deploy-repo
-          cd deploy-repo
-          git checkout gh-pages 2>/dev/null || git checkout -b gh-pages
-          cd ..
-          find deploy-repo -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          cp -a "$publish_dir"/. deploy-repo/
-          cd deploy-repo
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git diff --staged --quiet && exit 0
-          git commit -m 'Deploy TfL Live Arrivals from Spectre0100.github.io'
-          git push
+      - uses: actions/checkout@v4
+      - uses: dinghydev/setup-dinghy@v1
+        with:
+          prepare-images: site
+      - run: dinghy site build
+      - uses: actions/upload-pages-artifact@v3
+        id: deployment
+        with:
+          path: showcases-tfl-live-arrivals/output/site/
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/deploy-pages@v4

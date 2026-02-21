@@ -1,4 +1,3 @@
-import { getStopName } from '../utils/stringUtils.ts'
 export function fetchTimeTable(station: any, onSuccess: any) {
   console.log('fetching timetable for', station)
   fetch(

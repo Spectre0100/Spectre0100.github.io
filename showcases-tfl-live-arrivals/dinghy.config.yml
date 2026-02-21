@@ -2,15 +2,15 @@ site:
   # deploy:
   #   s3Url: s3://dinghy-dev-demo-sites-origin
   #   s3Region: eu-west-1
-  url: https://cloudfront-site-demo.dinghy.dev
-  baseUrl: /showcases-tfl-live-arrivals-by-spectre0100/
+  url: https://mrduguo.github.io
+  baseUrl: /Spectre0100.github.io/
   title: by Spectre0100
   navbar:
     title: TfL Live Arrivals
     logo:
       src: /assets/favicon.svg
       # Following config to enable clicking the logo to refresh the page
-      href: https://cloudfront-site-demo.dinghy.dev/showcases-tfl-live-arrivals-by-spectre0100/
+      href: https://mrduguo.github.io/Spectre0100.github.io/
       target: _self
     items:
       - href: https://github.com/Spectre0100/Spectre0100.github.io
