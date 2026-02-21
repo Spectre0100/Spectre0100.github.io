@@ -1,0 +1,10 @@
+---
+title: TfL Live Arrivals
+hide_title: true
+---
+import TfLLive from '../components/TfLLive'
+import BrowserOnly from '@docusaurus/BrowserOnly'
+
+<BrowserOnly fallback={<div>Loading...</div>}>
+  {() => <TfLLive/>}
+</BrowserOnly>

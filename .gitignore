@@ -1,0 +1,10 @@
+#Dinghy
+tmp.*
+*.local
+**/output/site
+
+# IDE
+.devcontainer.json
+
+# OS
+**/.DS_Store

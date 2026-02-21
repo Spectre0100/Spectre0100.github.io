@@ -1,0 +1,18 @@
+site:
+  url: https://mrduguo.github.io
+  baseUrl: /Spectre0100.github.io/
+  title: by Spectre0100
+  navbar:
+    title: TfL Live Arrivals
+    logo:
+      src: /assets/favicon.svg
+      # Following config to enable clicking the logo to refresh the page
+      # href: http://localhost:3000/Spectre0100.github.io/ # local preview, comment out for production
+      href: https://mrduguo.github.io/Spectre0100.github.io/
+      target: _self
+    items:
+      - href: https://github.com/Spectre0100/Spectre0100.github.io
+        position: right
+        className: header-github-link
+        aria-label: GitHub repository
+  footer: false
